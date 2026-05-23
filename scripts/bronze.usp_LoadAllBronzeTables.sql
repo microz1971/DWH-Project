@@ -8,7 +8,7 @@ BEGIN
     DECLARE @sql NVARCHAR(MAX);
   
     -- 1. ACM
-    TRUNCATE TABLE bronze.pos_acm_payments;
+    
     SET @sql = N'
     INSERT INTO bronze.pos_acm_payments
     SELECT UNIQ,
@@ -37,7 +37,7 @@ BEGIN
     EXEC sp_executesql @sql;
    
     -- 2. ACA
-    TRUNCATE TABLE bronze.pos_aca_fiscaldata;
+    
     SET @sql = N'
     INSERT INTO bronze.pos_aca_fiscaldata
     SELECT [UNIQ]
@@ -63,7 +63,7 @@ BEGIN
 
      
     -- 3. ACL
-    TRUNCATE TABLE bronze.pos_acl_logins;
+    
     SET @sql = N'
     INSERT INTO bronze.pos_acl_logins
     SELECT [UNIQ]
@@ -78,7 +78,7 @@ BEGIN
     EXEC sp_executesql @sql;
 
     -- 4. ACT
-    TRUNCATE TABLE bronze.pos_act_items;
+    
     SET @sql = N'
     INSERT INTO bronze.pos_act_items
     SELECT UNIQ,
@@ -114,7 +114,7 @@ BEGIN
     EXEC sp_executesql @sql;
 
     -- 5. ACC
-    TRUNCATE TABLE bronze.pos_acc_receipts;
+    
     SET @sql = N'
     INSERT INTO bronze.pos_acc_receipts
     SELECT UNIQ,
@@ -146,7 +146,7 @@ BEGIN
     EXEC sp_executesql @sql;
    
     -- 6. ACS
-    TRUNCATE TABLE bronze.pos_acs_shifts;
+   
     SET @sql = N'
     INSERT INTO bronze.pos_acs_shifts
     SELECT 
