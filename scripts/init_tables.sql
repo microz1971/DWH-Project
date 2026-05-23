@@ -226,3 +226,12 @@ CREATE TABLE bronze.pos_ac_dopdata
 );
 GO
 
+IF OBJECT_ID('bronze.Ref_DOPData_Codes', 'U') IS NOT NULL
+    DROP TABLE bronze.Ref_DOPData_Codes;
+GO
+CREATE TABLE bronze.[Ref_DOPData_Codes] (
+    [DataCode] NVARCHAR(50) PRIMARY KEY,
+    [Description] NVARCHAR(100)
+);
+GO
+
