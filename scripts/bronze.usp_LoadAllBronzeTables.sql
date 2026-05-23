@@ -1,5 +1,5 @@
 CREATE PROCEDURE bronze.usp_LoadAllBronzeTables
-    
+    @SourceServer SYSNAME,
     @DateFrom DATE = '2026-01-01'
 AS
 BEGIN
@@ -32,7 +32,7 @@ BEGIN
     CHR,
     POSITION
     
-    FROM [DC1-SRV-KC01].[CashDB51].[dbo].[ACM]
+    FROM [' + @SourceServer + '].[CashDB51].[dbo].[ACM]
     WHERE [DATE] >= ''' + CONVERT(NVARCHAR(10), @DateFrom, 120) + '''';
     EXEC sp_executesql @sql;
    
@@ -57,7 +57,7 @@ BEGIN
       ,[CKKMErr]
       ,[CPapErr]
       
-    FROM [DC1-SRV-KC01].[CashDB51].[dbo].[ACA]
+    FROM [' + @SourceServer + '].[CashDB51].[dbo].[ACA]
     WHERE [DATE] >= ''' + CONVERT(NVARCHAR(10), @DateFrom, 120) + '''';
     EXEC sp_executesql @sql;
 
@@ -73,7 +73,7 @@ BEGIN
       ,[SNAME]
       ,[OPCODE]
       ,[OPDATE]
-    FROM [DC1-SRV-KC01].[CashDB51].[dbo].[ACL]
+    FROM [' + @SourceServer + '].[CashDB51].[dbo].[ACL]
     WHERE [OPDATE] >= ''' + CONVERT(NVARCHAR(10), @DateFrom, 120) + '''';
     EXEC sp_executesql @sql;
 
@@ -109,7 +109,7 @@ BEGIN
     SName,
     PriceTypeName,
     POSITION
-    FROM [DC1-SRV-KC01].[CashDB51].[dbo].[ACT]
+    FROM [' + @SourceServer + '].[CashDB51].[dbo].[ACT]
     WHERE [DATE] >= ''' + CONVERT(NVARCHAR(10), @DateFrom, 120) + '''';
     EXEC sp_executesql @sql;
 
@@ -141,7 +141,7 @@ BEGIN
     SUME,
     PayType,
     DOPDATA
-    FROM [DC1-SRV-KC01].[CashDB51].[dbo].[ACC]
+    FROM [' + @SourceServer + '].[CashDB51].[dbo].[ACC]
     WHERE [DATE_BEG] >= ''' + CONVERT(NVARCHAR(10), @DateFrom, 120) + '''';
     EXEC sp_executesql @sql;
    
@@ -208,7 +208,7 @@ BEGIN
     CTSALE,
     CMSALE,
     DOPDATA
-    FROM [DC1-SRV-KC01].[CashDB51].[dbo].[ACS]
+    FROM [' + @SourceServer + '].[CashDB51].[dbo].[ACS]
     WHERE [DT_BEG] >= ''' + CONVERT(NVARCHAR(10), @DateFrom, 120) + '''';
     EXEC sp_executesql @sql;
   
