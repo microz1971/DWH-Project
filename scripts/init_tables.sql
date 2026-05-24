@@ -256,7 +256,6 @@ IF OBJECT_ID('bronze.pos_ac_dopdata', 'U') IS NOT NULL
     DROP TABLE bronze.pos_ac_dopdata;
 GO
 CREATE TABLE bronze.pos_ac_dopdata (
-    [ID] [int] IDENTITY(1,1) NOT NULL, 
 	[UNIQ] [uniqueidentifier] NULL,
 	[DATE] [datetime] NULL,
 	[CHECKNUM] [int] NULL,
