@@ -252,3 +252,18 @@ GO
 CREATE INDEX IX_LOCATION ON [bronze].[ref_locations] (location, company);
 GO
 
+IF OBJECT_ID('bronze.pos_ac_dopdata', 'U') IS NOT NULL
+    DROP TABLE bronze.pos_ac_dopdata;
+GO
+CREATE TABLE bronze.pos_ac_dopdata (
+    [ID] [int] IDENTITY(1,1) NOT NULL, 
+	[UNIQ] [uniqueidentifier] NULL,
+	[DATE] [datetime] NULL,
+	[CHECKNUM] [int] NULL,
+	[CASHCODE] [smallint] NULL,
+	[SHIFT] [smallint] NULL,
+	[GROUP] [nvarchar](50) NULL,
+	[DATA] [nvarchar](50) NULL,
+	[VALUE] [nvarchar](100) NULL,
+);
+GO
