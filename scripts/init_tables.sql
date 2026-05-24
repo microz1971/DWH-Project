@@ -226,12 +226,29 @@ CREATE TABLE bronze.pos_ac_dopdata
 );
 GO
 
-IF OBJECT_ID('bronze.Ref_DOPData_Codes', 'U') IS NOT NULL
-    DROP TABLE bronze.Ref_DOPData_Codes;
+IF OBJECT_ID('bronze.ref_dopdata_codes', 'U') IS NOT NULL
+    DROP TABLE bronze.ref_dopdata_codes;
 GO
-CREATE TABLE bronze.[Ref_DOPData_Codes] (
+CREATE TABLE bronze.ref_dopdata_codes (
     [DataCode] NVARCHAR(50) PRIMARY KEY,
     [Description] NVARCHAR(100)
 );
+GO
+
+IF OBJECT_ID('bronze.ref_locations', 'U') IS NOT NULL
+    DROP TABLE bronze.ref_locations;
+GO
+CREATE TABLE [bronze].[ref_locations](
+	[Location] [varchar](50) NOT NULL,
+	[Company] [varchar](100) NOT NULL,
+	[Duty] [varchar](2) NOT NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[Location] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+CREATE INDEX IX_LOCATION ON [bronze].[ref_locations] (location, company);
 GO
 
