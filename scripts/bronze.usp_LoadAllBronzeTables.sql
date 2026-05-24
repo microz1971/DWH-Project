@@ -211,5 +211,23 @@ BEGIN
     FROM [' + @SourceServer + '].[CashDB51].[dbo].[ACS]
     WHERE [DT_BEG] >= ''' + CONVERT(NVARCHAR(10), @DateFrom, 120) + '''';
     EXEC sp_executesql @sql;
+
+ -- 7. ACDOPDATA Yandex
+   
+SET @sql = N'
+INSERT INTO bronze.pos_ac_dopdata
+SELECT 
+   A.[UNIQ]
+  ,M.[DATE]
+  ,M.[CHECKNUM]
+  ,M.[CASHCODE]
+  ,M.[SHIFT]      
+  ,LEFT(A.[Name], CHARINDEX('':'', A.[Name]) - 1) AS [Group]
+  ,SUBSTRING(A.[Name], CHARINDEX('':'', A.[Name]) + 1, LEN(A.[Name])) AS [Data]
+  ,[VALUE]
+FROM [' + @SourceServer + '].[CashDB51].[dbo].[ACDOPDATA] A
+LEFT JOIN [' + @SourceServer + '].[CashDB51].[dbo].[ACM] M ON A.UNIQ = M.UNIQ
+WHERE A.[Name] = ''YAST:PAYMETHOD''';
+EXEC sp_executesql @sql;
   
 END
