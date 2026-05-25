@@ -229,5 +229,15 @@ FROM [' + @SourceServer + '].[CashDB51].[dbo].[ACDOPDATA] A
 LEFT JOIN [' + @SourceServer + '].[CashDB51].[dbo].[ACM] M ON A.UNIQ = M.UNIQ
 WHERE A.[Name] = ''YAST:PAYMETHOD''';
 EXEC sp_executesql @sql;
+
+-- 8. PROMOID
+   
+SET @sql = N'
+INSERT INTO bronze.ref_promoid
+SELECT 
+   [ID]
+  ,[Name]
+FROM [' + @SourceServer + '].[CashDB51].[dbo].[PromoHeader]';
+EXEC sp_executesql @sql;
   
 END
