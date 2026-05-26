@@ -239,5 +239,24 @@ SELECT
   ,[Name]
 FROM [' + @SourceServer + '].[CashDB51].[dbo].[PromoHeader]';
 EXEC sp_executesql @sql;
+
+-- 9. ACDOPDATA AvoltaClub
+   
+SET @sql = N'
+INSERT INTO bronze.pos_avoltaclub_data
+SELECT 
+   A.[UNIQ]
+  ,M.[DATE]
+  ,M.[CHECKNUM]
+  ,M.[CASHCODE]
+  ,M.[SHIFT]  
+  ,M.[POSITION]
+  ,LEFT(A.[Name], CHARINDEX('':'', A.[Name]) - 1) AS [Group]
+  ,SUBSTRING(A.[Name], CHARINDEX('':'', A.[Name]) + 1, LEN(A.[Name])) AS [Data]
+  ,[VALUE]
+FROM [' + @SourceServer + '].[CashDB51].[dbo].[ACDOPDATA] A
+LEFT JOIN [' + @SourceServer + '].[CashDB51].[dbo].[ACT] M ON A.UNIQ = M.UNIQ
+WHERE A.[Name] IN (''RS:LCUSID'', ''RS:NDISC'')';
+EXEC sp_executesql @sql;
   
 END
