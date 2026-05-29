@@ -399,6 +399,8 @@ CREATE TABLE [bronze].[ref_locations](
 	[LOCATION] [varchar](50) NOT NULL,
 	[COMPANY] [varchar](100) NOT NULL,
 	[DUTY] [varchar](2) NOT NULL,
+	[StoreCode] [int] NOT NULL,
+	[StoreName] [varchar](100) NOT NULL,
 PRIMARY KEY CLUSTERED 
 (
 	[LOCATION] ASC
@@ -407,29 +409,88 @@ PRIMARY KEY CLUSTERED
 GO
 
 INSERT INTO [bronze].[ref_locations]
-	([LOCATION], [COMPANY], [DUTY])
+	([LOCATION], [COMPANY], [DUTY], [StoreCode], [StoreName])
 VALUES
-	('AER Sochi Airport DF', 'Регстаэр-СК',	'DF')
-	('AER Sochi Airport DP', 'Регстаэр-СК',	'DP')
-	('Airport NQZ',	'DCA',	'DF')
-	('Diplomatic Shop',	'DCA',	'DF')
-	('DME Domodedovo Airport DF', 'Регстаэр-В',	'DF')
-	('DME Domodedovo Airport DP', 'Регстаэр-В',	'DP')
-	('KGD Kaliningrad Airport DP', 'Регстаэр-Р', 'DP')
-	('KJA Krasnoyarsk Airport DP', 'Регстаэр-Р', 'DP')
-	('KRR Krasnodar Airport DF', 'Регстаэр-СК',	'DF')
-	('KRR Krasnodar Airport DP', 'Регстаэр-СК',	'DP')
-	('LED Pulkovo SPb Airport DF', 'Регстаэр-СП', 'DF')
-	('LED Pulkovo SPb Airport DP', 'Регстаэр-СП', 'DP')
-	('LED VIP Shop', 'Регстаэр-СП',	'DF')
-	('MRV Mineralny Vody Airport DF', 'АэроРегион',	'DF')
-	('MRV Mineralny Vody Airport DP', 'АэроРегион',	'DP')
-	('OVB Novosibirsk Airport DF', 'Регстаэр-Р', 'DF')
-	('OVB Novosibirsk Airport DP', 'Регстаэр-Р', 'DP')
-	('STW Stavropol Airport DP', 'АэроРегион', 'DP')
-	('VKO Vnukovo Airport DF', 'Регстаэр-М', 'DF')
-	('VKO Vnukovo Airport DP', 'Регстаэр-М', 'DP')
-	('VVO Vladivostok Airport DP', 'Регстаэр-СК', 'DP')
+('VKO Vnukovo Airport DP','Регстаэр-М','DP',100,'А1516'),
+('VKO Vnukovo Airport DP','Регстаэр-М','DP',101,'А19'),
+('VKO Vnukovo Airport DP','Регстаэр-М','DP',102,'А20'),
+('VKO Vnukovo Airport DP','Регстаэр-М','DP',103,'А21'),
+('VKO Vnukovo Airport DP','Регстаэр-М','DP',104,'А22'),
+('VKO Vnukovo Airport DP','Регстаэр-М','DP',105,'А23'),
+('VKO Vnukovo Airport DP','Регстаэр-М','DP',106,'А24'),
+('VKO Vnukovo Airport DP','Регстаэр-М','DP',107,'А25'),
+('VKO Vnukovo Airport DP','Регстаэр-М','DP',108,'А26'),
+('VKO Vnukovo Airport DP','Регстаэр-М','DP',109,'А27'),
+('VKO Vnukovo Airport DP','Регстаэр-М','DP',110,'А29 (Прилет)'),
+('VKO Vnukovo Airport DP','Регстаэр-М','DP',111,'А31'),
+('DME Domodedovo Airport DP','Регстаэр-В','DP',120,'Arrival Store DP'),
+('DME Domodedovo Airport DP','Регстаэр-В','DP',121,'Walkthrough store'),
+('DME Domodedovo Airport DP','Регстаэр-В','DP',122,'Sunglasses'),
+('DME Domodedovo Airport DP','Регстаэр-В','DP',123,'World of Presents'),
+('DME Domodedovo Airport DP','Регстаэр-В','DP',124,'Toys'),
+('DME Domodedovo Airport DP','Регстаэр-В','DP',125,'Souvenirs'),
+('DME Domodedovo Airport DP','Регстаэр-В','DP',126,'Swarovski C'),
+('DME Domodedovo Airport DP','Регстаэр-В','DP',127,'Swarovski D'),
+('DME Domodedovo Airport DP','Регстаэр-В','DP',128,'Beauty 1'),
+('LED Pulkovo SPb Airport DP','Регстаэр-СП','DP',130,'Walkthrough DP shop'),
+('OVB Novosibirsk Airport DP','Регстаэр-Р','DP',140,'Walkthrough store'),
+('KGD Kaliningrad Airport DP','Регстаэр-Р','DP',141,'Калининград Магазин'),
+('KJA Krasnoyarsk Airport DP','Регстаэр-Р','DP',142,'Duty Paid Shop'),
+('MRV Mineralny Vody Airport DP','АэроРегион','DP',151,'Магазин Минводы ДП'),
+('STW Stavropol Airport DP','АэроРегион','DP',152,'Duty Paid Shop'),
+('MRV Mineralny Vody Airport DP','АэроРегион','DP',153,'MRV Duty&Trendy DP'),
+('MRV Mineralny Vody Airport DP','АэроРегион','DP',154,'MRV Duty&Happy DP'),
+('AER Sochi Airport DP','Регстаэр-СК','DP',160,'VIP terminal shop'),
+('AER Sochi Airport DP','Регстаэр-СК','DP',161,'Sochi Duty Paid Shop'),
+('AER Sochi Airport DP','Регстаэр-СК','DP',162,'Sochi Time Box'),
+('AER Sochi Airport DP','Регстаэр-СК','DP',163,'Hudson  Common Area'),
+('AER Sochi Airport DP','Регстаэр-СК','DP',164,'Hudson Airside'),
+('KRR Krasnodar Airport DP','Регстаэр-СК','DP',165,'Krasnodar WT DP'),
+('VVO Vladivostok Airport DP','Регстаэр-СК','DP',166,'Vladivostok'),
+('VKO Vnukovo Airport DF','Регстаэр-М','DF',200,'Внуково АВК А2'),
+('VKO Vnukovo Airport DF','Регстаэр-М','DF',201,'Внуково АВК А3'),
+('VKO Vnukovo Airport DF','Регстаэр-М','DF',202,'Внуково АВК А4'),
+('VKO Vnukovo Airport DF','Регстаэр-М','DF',203,'Внуково АВК А5'),
+('VKO Vnukovo Airport DF','Регстаэр-М','DF',204,'Внуково АВК А6'),
+('VKO Vnukovo Airport DF','Регстаэр-М','DF',205,'Внуково АВК А7'),
+('VKO Vnukovo Airport DF','Регстаэр-М','DF',206,'Внуково АВК А8'),
+('VKO Vnukovo Airport DF','Регстаэр-М','DF',207,'Внуково АВК А9'),
+('VKO Vnukovo Airport DF','Регстаэр-М','DF',208,'Внуково АВК А10'),
+('VKO Vnukovo Airport DF','Регстаэр-М','DF',209,'Внуково АВК А11'),
+('VKO Vnukovo Airport DF','Регстаэр-М','DF',210,'Внуково АВК А12'),
+('VKO Vnukovo Airport DF','Регстаэр-М','DF',211,'Внуково АВК А13'),
+('VKO Vnukovo Airport DF','Регстаэр-М','DF',212,'Внуково АВК А28'),
+('VKO Vnukovo Airport DF','Регстаэр-М','DF',213,'Внуково АВК А30'),
+('VKO Vnukovo Airport DF','Регстаэр-М','DF',214,'Внуково-ПШ'),
+('VKO Vnukovo Airport DF','Регстаэр-М','DF',215,'Внуково 3-1'),
+('VKO Vnukovo Airport DF','Регстаэр-М','DF',216,'Внуково 3-2'),
+('VKO Vnukovo Airport DF','Регстаэр-М','DF',217,'Внуково АВК А1'),
+('VKO Vnukovo Airport DF','Регстаэр-М','DF',218,'Внуково А6 НОУ СИКРЕТ'),
+('DME Domodedovo Airport DF','Регстаэр-В','DF',220,'Core Categories'),
+('DME Domodedovo Airport DF','Регстаэр-В','DF',221,'Buy&Fly (63)'),
+('DME Domodedovo Airport DF','Регстаэр-В','DF',222,'Arrival store DF'),
+('DME Domodedovo Airport DF','Регстаэр-В','DF',223,'P&C, Fashion, LTC'),
+('DME Domodedovo Airport DF','Регстаэр-В','DF',224,'Last Minute'),
+('LED Pulkovo SPb Airport DF','Регстаэр-СП','DF',230,'Walkthrough DF'),
+('LED Pulkovo SPb Airport DF','Регстаэр-СП','DF',231,'Express DF'),
+('LED Pulkovo SPb Airport DF','Регстаэр-СП','DF',232,'No Secret DF'),
+('LED Pulkovo SPb Airport DF','Регстаэр-СП','DF',233,'Atelier DF'),
+('LED Pulkovo SPb Airport DF','Регстаэр-СП','DF',234,'Collection DF'),
+('LED Pulkovo SPb Airport DF','Регстаэр-СП','DF',235,'Kids’ Store DF'),
+('LED Pulkovo SPb Airport DF','Регстаэр-СП','DF',236,'Hudson DF'),
+('LED VIP Shop','Регстаэр-СП','DF',237,'VIP DF'),
+('LED Pulkovo SPb Airport DF','Регстаэр-СП','DF',238,'Arrival DF'),
+('OVB Novosibirsk Airport DF','Регстаэр-Р','DF',240,'OVB DF store'),
+('OVB Novosibirsk Airport DF','Регстаэр-Р','DF',241,'Arrival DF'),
+('MRV Mineralny Vody Airport DF','АэроРегион','DF',253,'Минеральные Воды'),
+('AER Sochi Airport DF','Регстаэр-СК','DF',260,'DF WT'),
+('AER Sochi Airport DF','Регстаэр-СК','DF',261,'Arrival DF'),
+('KRR Krasnodar Airport DF','Регстаэр-СК','DF',262,'Krasnodar DF WT'),
+('Diplomatic Shop','DCA','DF',280,'Astana Diplomatic Shop'),
+('Airport NQZ','DCA','DF',281,'Astana VIP Shop'),
+('Airport NQZ','DCA','DF',282,'Astana Spirit of Kazakhstan'),
+('Airport NQZ','DCA','DF',283,'Astana Major Shop'),
+('Airport NQZ','DCA','DF',284,'Astana DF Arrival')
 
 /*==============AC Dopdata Promo ID==============================================*/	
 IF OBJECT_ID('bronze.ref_promoid', 'U') IS NOT NULL
