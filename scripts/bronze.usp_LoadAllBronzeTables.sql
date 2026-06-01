@@ -368,24 +368,24 @@ EXEC sp_executesql @sql;
 
     -- 12. ACDOPDATA PromoNumber Data
    
-    SET @sql = N'
-    INSERT INTO 
-        bronze.pos_promonumber_data
-        SELECT 
-           A.[UNIQ]
-          ,M.[DATE]
-          ,M.[CHECKNUM]
-          ,M.[CASHCODE]
-          ,M.[SHIFT]   
-          ,M.[POSITION] 
-          ,SUBSTRING(A.[Name], CHARINDEX('':'', A.[Name]) + 1, LEN(A.[Name])) AS [Data]
-          ,[VALUE]
-        FROM 
-            [' + @SourceServer + '].[CashDB51].[dbo].[ACDOPDATA] A
-        LEFT JOIN [' + @SourceServer + '].[CashDB51].[dbo].[ACT] M ON A.UNIQ = M.UNIQ
-        WHERE M.[DATE] >= ''' + CONVERT(NVARCHAR(10), @DateFrom, 120) + ''' 
-          AND   A.[Name] IN (''PROMODISC'')';
-    EXEC sp_executesql @sql;
+     SET @sql = N'
+ INSERT INTO 
+     bronze.pos_promonumber_data
+     SELECT 
+        A.[UNIQ]
+       ,M.[DATE]
+       ,M.[CHECKNUM]
+       ,M.[CASHCODE]
+       ,M.[SHIFT]   
+       ,M.[POSITION] 
+       ,SUBSTRING(A.[Name], CHARINDEX('':'', A.[Name]) + 1, LEN(A.[Name])) AS [Data]
+       ,[VALUE]
+     FROM 
+         [' + @SourceServer + '].[CashDB51].[dbo].[ACDOPDATA] A
+     LEFT JOIN [' + @SourceServer + '].[CashDB51].[dbo].[ACT] M ON A.UNIQ = M.UNIQ
+     WHERE M.[DATE] >= ''' + CONVERT(NVARCHAR(10), @DateFrom, 120) + ''' 
+       AND   A.[Name] IN (''PROMODISC'') and M.[DOPDATA] like ''%PROMODISC%'' and A.[Position] = M.[Position]';
+ EXEC sp_executesql @sql;
 
     -- 13. ACDOPDATA SALER SIP Data
    
