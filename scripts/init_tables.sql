@@ -11,6 +11,13 @@ Script Purpose:
 /*
 ===========For SSIS Connection Strings=========================================
 */
+CREATE TABLE [bronze].[pos_mol_users](
+	[CODE] [int] NULL,
+	[LOGIN] [nvarchar](20) NULL,
+	[NAME] [nvarchar](255) NULL,
+) ON [PRIMARY]
+GO
+
 CREATE TABLE [bronze].[etl_servers](
 	[ServerName] [varchar](50) NOT NULL,
 	[ConnectionString] [nvarchar](500) NOT NULL,
