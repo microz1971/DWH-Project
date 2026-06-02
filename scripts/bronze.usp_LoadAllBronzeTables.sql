@@ -429,6 +429,28 @@ EXEC sp_executesql @sql;
         WHERE M.[DATE] >= ''' + CONVERT(NVARCHAR(10), @DateFrom, 120) + ''' 
             AND A.[Name] = (''DMDK:UIN'') and A.[Position] = M.[Position]';
     EXEC sp_executesql @sql;
+
+SET @sql = N'
+INSERT INTO 
+    bronze.pos_mol_users
+    SELECT 
+       [CODE]
+      ,[LOGIN]
+      ,[NAME]
+    FROM 
+        [DC1-SRV-KC01].[CashDB51].[dbo].[MOL]';
+EXEC sp_executesql @sql;
+
+    SET @sql = N'
+INSERT INTO 
+    bronze.pos_mol_users
+    SELECT 
+       [CODE]
+      ,[LOGIN]
+      ,[NAME]
+    FROM 
+        [DC1-SRV-KC03].[CashDB51].[dbo].[MOL]';
+EXEC sp_executesql @sql;
   
 END
 GO
