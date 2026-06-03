@@ -123,7 +123,7 @@ SET @sql = N'
     INSERT INTO [silver].[acm_payments]
     ([UNIQ],[CHECKNUM],[CASHCODE],[SHIFT],[FSHIFT],[FSERIAL],[DATE],[TIME],[OPCODE],[OP_TYPE]
     ,[VALCODE],[VC_TYPE],[VALTYPE],[VT_TYPE],[NRATE],[VSUM],[SUMB],[SUMN],[SUME],[CHR]
-    ,[POSITION],[SERVER]
+    ,[POSITION],[SERVER],[SNAME]
     )
 
     SELECT [UNIQ]
