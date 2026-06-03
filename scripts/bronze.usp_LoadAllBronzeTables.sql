@@ -46,7 +46,8 @@ BEGIN
             SUME,
             DOPDATA,
             CHR,
-            POSITION   
+            POSITION,
+            SNAME
         FROM 
             [' + @SourceServer + '].[CashDB51].[dbo].[ACM]
         WHERE 
