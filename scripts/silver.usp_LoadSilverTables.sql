@@ -173,6 +173,7 @@ SET @sql = N'
                WHEN CASHCODE like ''28%'' THEN ''DC1-SRV-KC03''
                ELSE ''DC1-SRV-KC01''
         END AS [SERVER]
+         ,[SNAME]
     FROM [DataWarehouse].[bronze].[pos_acm_payments]
     WHERE [OPCODE] IN (''72'',''76'',''82'',''80'',''70'',''74'')';
 EXEC sp_executesql @sql;
