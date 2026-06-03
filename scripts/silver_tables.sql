@@ -115,6 +115,7 @@ CREATE TABLE silver.acm_payments
 [SUME] [decimal](13, 2) NULL,
 [CHR] [char](4) NULL,
 [POSITION] [smallint] NULL,
+[SNAME] [nvarchar](150) NULL,
 [SERVER] [nvarchar](50) NULL,
 [DWH_CREATE_DATE] [datetime2] DEFAULT GETDATE()
 );
