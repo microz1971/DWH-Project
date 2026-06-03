@@ -160,7 +160,8 @@ CREATE TABLE bronze.pos_acm_payments
     [SUMN] [decimal](13, 2) NULL,
     [SUME] [decimal](13, 2) NULL,
     [CHR] [char](4) NULL,
-    [POSITION] [smallint] NULL
+    [POSITION] [smallint] NULL,
+	[SNAME] [nvarchar](20) NULL
 );
 GO
 
