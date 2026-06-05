@@ -431,6 +431,7 @@ EXEC sp_executesql @sql;
             AND A.[Name] = (''DMDK:UIN'') and A.[Position] = M.[Position]';
     EXEC sp_executesql @sql;
 
+-- 14. MOL Users
 SET @sql = N'
 INSERT INTO 
     bronze.pos_mol_users
@@ -452,6 +453,38 @@ INSERT INTO
     FROM 
         [DC1-SRV-KC03].[CashDB51].[dbo].[MOL]';
 EXEC sp_executesql @sql;
-  
+
+-- 15. CM
+SET @sql = N'
+    INSERT INTO bronze.oper_pos_cm_payments
+    SELECT
+      ,[UNIQ]
+      ,[SCODE]
+      ,[CHECKNUM]
+      ,[CASHCODE]
+      ,[SHIFT]
+      ,[FSHIFT]
+      ,[FSERIAL]
+      ,[DATE]
+      ,[TIME]
+      ,[OPCODE]
+      ,[VALCODE]
+      ,[NRATE]
+      ,[BOND]
+      ,[BOND_QUANT]
+      ,[VSUM]
+      ,[SUMB]
+      ,[SUMN]
+      ,[SUME]
+      ,[DOCNUM]
+      ,[C_LINK]
+      ,[DOPDATA]
+      ,[POSITION]
+    FROM 
+        [' + @SourceServer + '].[CashDB51].[dbo].[CM]
+    WHERE 
+        [DATE] >= ''' + CONVERT(NVARCHAR(10), @DateFrom, 120) + '''';
+EXEC sp_executesql @sql;
+
 END
 GO
