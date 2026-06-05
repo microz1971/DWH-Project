@@ -37,7 +37,7 @@ BEGIN
     WHERE 
         [DATE] >= CAST(GETDATE() AS DATE) 
         AND [DATE] < DATEADD(DAY, 1, CAST(GETDATE() AS DATE));';
-
+EXEC sp_executesql @sql;
   
 END
 GO
