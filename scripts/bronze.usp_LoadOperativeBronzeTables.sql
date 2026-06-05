@@ -2,7 +2,7 @@ CREATE PROCEDURE [bronze].[usp_LoadOperativeBronzeTables]
     
     
     @SourceServer SYSNAME, -- Will be needed for SSIS Foreach Loop Container to retrieve data from all POS Servers
-    @DateFrom DATE -- TODAY
+    @DateFrom DATE = NULL -- TODAY
 AS
 BEGIN
     SET NOCOUNT ON;
@@ -14,7 +14,7 @@ BEGIN
     SET @sql = N'
     INSERT INTO bronze.oper_pos_cm_payments
     SELECT
-      ,[UNIQ]
+       [UNIQ]
       ,[SCODE]
       ,[CHECKNUM]
       ,[CASHCODE]
@@ -35,7 +35,8 @@ BEGIN
     FROM 
         [' + @SourceServer + '].[CashDB51].[dbo].[CM]
     WHERE 
-        [DATE] = GETDATE()';
+        [DATE] >= CAST(GETDATE() AS DATE) 
+        AND [DATE] < DATEADD(DAY, 1, CAST(GETDATE() AS DATE));';
 
   
 END
