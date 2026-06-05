@@ -345,3 +345,35 @@ CREATE TABLE [silver].[ref_promoid](
     [DWH_CREATE_DATE] [datetime2] DEFAULT GETDATE()
 ) ON [PRIMARY]
 GO
+/*==============OPER CM==============================================*/	
+CREATE TABLE [silver].[oper_cm_payments](
+	[UNIQ] [uniqueidentifier] NULL,
+	[SCODE] [int] NULL,
+	[CHECKNUM] [int] NULL,
+	[CASHCODE] [smallint] NULL,
+	[SHIFT] [smallint] NULL,
+	[FSHIFT] [smallint] NULL,
+	[FSERIAL] [nvarchar](20) NULL,
+	[DATE] [date] NULL,
+	[TIME] [time](7) NULL,
+	[OPCODE] [smallint] NULL,
+	[OP_TYPE] [nvarchar](200) NULL,
+	[VALCODE] [smallint] NULL,
+	[VC_TYPE] [nvarchar](200) NULL,
+	[VALTYPE] [tinyint] NULL,
+	[VT_TYPE] [nvarchar](50) NULL,
+	[NRATE] [decimal](10, 2) NULL,
+	[VSUM] [decimal](13, 2) NULL,
+	[SUMB] [decimal](13, 2) NULL,
+	[SUMN] [decimal](13, 2) NULL,
+	[SUME] [decimal](13, 2) NULL,
+	[CHR] [char](4) NULL,
+	[POSITION] [smallint] NULL,
+	[SERVER] [nvarchar](50) NULL,
+	[SNAME] [nvarchar](150) NULL,
+	[DWH_CREATE_DATE] [datetime2](7) NULL
+) ON [PRIMARY]
+GO
+
+ALTER TABLE [silver].[oper_cm_payments] ADD  DEFAULT (getdate()) FOR [DWH_CREATE_DATE]
+GO
