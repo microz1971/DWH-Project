@@ -510,3 +510,26 @@ CREATE TABLE [bronze].[ref_promoid](
 	[Description] [nvarchar](200) NULL
 ) ON [PRIMARY]
 GO
+
+/*==============OPERATIVE CM==============================================*/	
+CREATE TABLE [bronze].[oper_pos_cm_payments](
+	[UNIQ] [uniqueidentifier] NULL,
+	[SCODE] [int] NULL,
+	[CHECKNUM] [int] NULL,
+	[CASHCODE] [smallint] NULL,
+	[SHIFT] [smallint] NULL,
+	[FSHIFT] [smallint] NULL,
+	[FSERIAL] [nvarchar](20) NULL,
+	[DATE] [datetime] NULL,
+	[TIME] [datetime] NULL,
+	[OPCODE] [smallint] NULL,
+	[VALCODE] [smallint] NULL,
+	[NRATE] [decimal](13, 4) NULL,
+	[VSUM] [decimal](13, 2) NULL,
+	[SUMB] [decimal](13, 2) NULL,
+	[SUMN] [decimal](13, 2) NULL,
+	[SUME] [decimal](13, 2) NULL,
+	[DOPDATA] [nvarchar](max) NULL,
+	[POSITION] [smallint] NULL,
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
