@@ -454,33 +454,5 @@ INSERT INTO
         [DC1-SRV-KC03].[CashDB51].[dbo].[MOL]';
 EXEC sp_executesql @sql;
 
--- 15. CM
-SET @sql = N'
-    INSERT INTO bronze.oper_pos_cm_payments
-    SELECT
-      ,[UNIQ]
-      ,[SCODE]
-      ,[CHECKNUM]
-      ,[CASHCODE]
-      ,[SHIFT]
-      ,[FSHIFT]
-      ,[FSERIAL]
-      ,[DATE]
-      ,[TIME]
-      ,[OPCODE]
-      ,[VALCODE]
-      ,[NRATE]
-      ,[VSUM]
-      ,[SUMB]
-      ,[SUMN]
-      ,[SUME]
-      ,[DOPDATA]
-      ,[POSITION]
-    FROM 
-        [' + @SourceServer + '].[CashDB51].[dbo].[CM]
-    WHERE 
-        [DATE] >= ''' + CONVERT(NVARCHAR(10), @DateFrom, 120) + '''';
-EXEC sp_executesql @sql;
-
 END
 GO
