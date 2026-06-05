@@ -367,7 +367,6 @@ CREATE TABLE [silver].[oper_cm_payments](
 	[SUMB] [decimal](13, 2) NULL,
 	[SUMN] [decimal](13, 2) NULL,
 	[SUME] [decimal](13, 2) NULL,
-	[CHR] [char](4) NULL,
 	[POSITION] [smallint] NULL,
 	[SERVER] [nvarchar](50) NULL,
 	[SNAME] [nvarchar](150) NULL,
