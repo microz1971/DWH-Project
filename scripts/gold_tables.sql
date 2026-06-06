@@ -1,3 +1,7 @@
+/*==============REPORT: Cashiers==============================================*/	
+IF OBJECT_ID('[gold].[rep_cashiers]', 'U') IS NOT NULL
+    DROP TABLE [gold].[rep_cashiers];
+GO
 CREATE TABLE [gold].[rep_cashiers](
     [COMPANY] [nvarchar](30) NULL,
     [LOCATION] [nvarchar](100) NULL,
@@ -12,6 +16,10 @@ GO
 CREATE INDEX IX_COMPANY_CASHIER ON gold.rep_cashiers(COMPANY, CASHIER);
 GO
 
+/*==============REPORT: Shifts==============================================*/	
+IF OBJECT_ID('[gold].[rep_shifts]', 'U') IS NOT NULL
+    DROP TABLE [gold].[rep_shifts];
+GO
 CREATE TABLE [gold].[rep_shifts](
   [DUTY] [nvarchar](2) NULL,
   [COMPANY] [nvarchar](30) NULL,
@@ -45,6 +53,10 @@ GO
 CREATE INDEX IX_FSHIFT_COMPANY ON [gold].[rep_shifts](FISCALSHIFT_NUMBER, COMPANY);
 GO
 
+/*==============REPORT: Yandex==============================================*/	
+IF OBJECT_ID('[gold].[rep_yandex]', 'U') IS NOT NULL
+    DROP TABLE [gold].[rep_yandex];
+GO
 CREATE TABLE [gold].[rep_yandex](
   [DATE] [date] NULL,
   [TIME] [nvarchar](8) NULL,
@@ -65,6 +77,10 @@ ALTER TABLE [gold].[rep_yandex] ADD  DEFAULT (getdate()) FOR [DWH_CREATE_DATE]
 GO
 CREATE INDEX IX_YandexTable ON [gold].[rep_yandex]([COMPANY], [DATE], [CASHIER])
 
+/*==============DASH: Yandex==============================================*/	
+IF OBJECT_ID('[gold].[dash_yandex]', 'U') IS NOT NULL
+    DROP TABLE [gold].[dash_yandex];
+GO
 CREATE TABLE [gold].[dash_yandex](
   [LOCATION] [nvarchar](100) NULL,
   [SALES] [decimal](10,2) NULL,
@@ -89,6 +105,10 @@ GO
 CREATE INDEX IX_Y_Location ON [gold].[dash_yandex]([LOCATION]);
 GO
 
+/*==============OPERATIVE: Money Flow for KZ==============================================*/	
+IF OBJECT_ID('[gold].[oper_cm_moneyflow_kz]', 'U') IS NOT NULL
+    DROP TABLE [gold].[oper_cm_moneyflow_kz];
+GO
 CREATE TABLE [gold].[oper_cm_moneyflow_kz](
 	[ID] [int] IDENTITY(1,1) NOT NULL,
 	[LOCATION] [nvarchar](50) NOT NULL,
