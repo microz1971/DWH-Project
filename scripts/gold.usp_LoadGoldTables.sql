@@ -23,13 +23,17 @@ SET @sql = N'
     INSERT INTO [gold].[rep_cashiers] 
         ([COMPANY], [LOCATION], [CASHIER], [QTY], [TOTAL])
 
-    SELECT 
-       L.COMPANY,
-       L.LOCATION,
-       I.SNAME,
-       COUNT(DISTINCT I.CHECKNUM),
-       SUM(I.SUMN)
-    FROM [DataWarehouse].[bronze].[pos_ac_dopdata]';
+SELECT
+	L.COMPANY,
+	L.LOCATION,
+	I.SNAME,
+	COUNT(DISTINCT I.CHECKNUM),
+	SUM(I.SUMN)
+FROM
+	silver.act_items I
+LEFT JOIN bronze.ref_locations L ON L.StoreCode = LEFT(I.CASHCODE, 3)
+GROUP BY
+	I.SNAME, L.COMPANY, L.LOCATION';
 EXEC sp_executesql @sql;
 /*===================================================================================================*/
 SET @sql = N'
