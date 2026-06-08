@@ -176,7 +176,7 @@ CREATE TABLE [gold].[rep_uin](
 	[FP_SERIAL] [nvarchar](6) NULL,
 	[FN_SERIAL] [nvarchar](20) NULL,
 	[DATE] [date] NULL,
-	[TIME] [time] NULL,
+	[TIME] [nvarchar](8) NULL,
 	[PRICE] [decimal](10,2) NULL,
 	[TOTAL] [decimal](10,2) NULL,
 	[DWH_CREATE_DATE] [datetime2](7) NULL
