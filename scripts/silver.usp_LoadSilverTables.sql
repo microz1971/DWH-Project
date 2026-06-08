@@ -403,11 +403,12 @@ EXEC sp_executesql @sql;
 SET @sql = N'
 INSERT INTO [silver].[ref_promoid]
 (
-    [PROMOID],[Description]
+    [PROMOID],[Description],[FLAG]
 )
 
 SELECT [PROMOID]
      ,[Description]
+     ,[FLAG]
 FROM [DataWarehouse].[bronze].[ref_promoid]';
 EXEC sp_executesql @sql;
 
