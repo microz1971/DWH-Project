@@ -219,6 +219,29 @@ GROUP BY
     L.[Location], [YEAR],[QUARTER],[MONTH],[WEEK]';
     EXEC sp_executesql @sql;
 /*===================================================================================================*/
+SET @sql = N'
+INSERT INTO [gold].[rep_uin]
+(
+	[OP_TYPE],[ITEM_CODE],[ITEM_NAME],[UIN],[SHIFT],[RECEIPT_NUMBER],[COMPANY],[DUTY]
+      ,[LOCATION],[STORE],[POS_NUMBER],[FP_SERIAL],[FN_SERIAL],[DATE],[TIME],[PRICE],[TOTAL]
+)
+
+SELECT
+	ACT.OP_TYPE,ACT.CODE,ACT.NAME,UIN.VALUE,ACT.SHIFT,ACT.CHECKNUM,L.Company,L.Duty,
+	L.Location,L.StoreName,ACT.CASHCODE,ACT.FSERIAL,MAX(ACA.FNSERIAL) AS [FNSERIAL],
+	ACT.DATE,LEFT(ACT.TIME, 8) AS [TIME],ACT.PRICE,ACT.SUMB
+FROM
+	silver.act_items ACT
+LEFT JOIN bronze.ref_locations L ON L.StoreCode = LEFT(ACT.CASHCODE, 3)
+LEFT JOIN silver.aca_fiscaldata ACA ON ACA.CASHCODE = ACT.CASHCODE AND ACA.CHECKNUM = ACT.CHECKNUM AND ACA.DATE = ACT.DATE
+INNER JOIN silver.ac_dopdata_uin UIN ON UIN.UNIQ = ACT.UNIQ AND UIN.NUMBER = ACT.CASHCODE AND UIN.RECEIPT_NUMBER = ACT.CHECKNUM
+									AND UIN.POSITION = ACT.POSITION
+GROUP BY
+	ACT.OP_TYPE,ACT.CODE,ACT.NAME,UIN.VALUE,ACT.POSITION,ACT.SHIFT,ACT.CHECKNUM,L.Company,
+	L.Duty,L.Location,L.StoreName,ACT.CASHCODE,ACT.FSERIAL,ACT.DATE,ACT.TIME,ACT.PRICE,ACT.SUMB';
+    EXEC sp_executesql @sql;
+/*===================================================================================================*/
+
 END
 GO
 
