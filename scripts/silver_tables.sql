@@ -342,6 +342,7 @@ GO
 CREATE TABLE [silver].[ref_promoid](
 	[PROMOID] [nvarchar](50) NOT NULL,
 	[Description] [nvarchar](200) NULL,
+	[FLAG] [nvarchar](4) NULL,
     [DWH_CREATE_DATE] [datetime2] DEFAULT GETDATE()
 ) ON [PRIMARY]
 GO
