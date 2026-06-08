@@ -15,6 +15,7 @@ CREATE TABLE [bronze].[pos_mol_users](
 	[CODE] [int] NULL,
 	[LOGIN] [nvarchar](20) NULL,
 	[NAME] [nvarchar](255) NULL,
+	[FLAG] [nvarchar](4) NULL
 ) ON [PRIMARY]
 GO
 
@@ -500,14 +501,15 @@ VALUES
 ('Airport NQZ','DCA','DF',283,'Astana Major Shop'),
 ('Airport NQZ','DCA','DF',284,'Astana DF Arrival')
 
-/*==============AC Dopdata Promo ID==============================================*/	
+/*==============PromoHeader Promo ID==============================================*/	
 IF OBJECT_ID('bronze.ref_promoid', 'U') IS NOT NULL
     DROP TABLE bronze.ref_promoid;
 GO
 	
 CREATE TABLE [bronze].[ref_promoid](
 	[PROMOID] [nvarchar](50) NOT NULL,
-	[Description] [nvarchar](200) NULL
+	[Description] [nvarchar](200) NULL,
+	[FLAG] [nvarchar](4) NULL
 ) ON [PRIMARY]
 GO
 
