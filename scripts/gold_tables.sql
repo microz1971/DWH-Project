@@ -150,3 +150,41 @@ PRIMARY KEY CLUSTERED
 GO
 ALTER TABLE [gold].[oper_cm_moneyflow_kz] ADD  DEFAULT (getdate()) FOR [DWH_CREATE_DATE]
 GO
+
+/*==============REPORT: UIN==============================================*/	
+IF OBJECT_ID('[gold].[rep_uin]', 'U') IS NOT NULL
+    DROP TABLE [gold].[rep_uin];
+USE [DataWarehouse]
+GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [gold].[rep_uin](
+	[OP_TYPE] [nvarchar](10) NULL,
+	[ITEM_CODE] [nvarchar](20) NULL,
+	[ITEM_NAME] [nvarchar](200) NULL,
+	[UIN] [nvarchar](30) NULL,
+	[SHIFT] [int] NULL,
+	[RECEIPT_NUMBER] [int] NULL,
+	[COMPANY] [nvarchar](30) NULL,
+	[DUTY] [nvarchar](2) NULL,
+	[LOCATION] [nvarchar](100) NULL,
+	[STORE] [nvarchar](100) NULL,
+	[POS_NUMBER] [nvarchar](5) NULL,
+	[FP_SERIAL] [nvarchar](6) NULL,
+	[FN_SERIAL] [nvarchar](20) NULL,
+	[DATE] [date] NULL,
+	[TIME] [date] NULL,
+	[PRICE] [decimal](10,2) NULL,
+	[TOTAL] [decimal](10,2) NULL,
+	[DWH_CREATE_DATE] [datetime2](7) NULL
+) ON [PRIMARY];
+GO
+
+ALTER TABLE [gold].[rep_uin] ADD  DEFAULT (getdate()) FOR [DWH_CREATE_DATE];
+GO
+
+CREATE INDEX IX_UIN ON [gold].[rep_uin]([ITEM_CODE],[UIN],[DATE],[COMPANY]);
+GO
