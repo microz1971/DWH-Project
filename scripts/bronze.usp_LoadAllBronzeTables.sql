@@ -273,7 +273,8 @@ INSERT INTO
     bronze.ref_promoid
     SELECT 
         [ID], 
-        [Name]
+        [Name],
+        ''' + @Flag + ''' AS [FLAG]
     FROM 
         OPENQUERY([' + @SourceServer + '], 
             ''SELECT [ID], [Name] FROM [CashDB51].[dbo].[PromoHeader]'')';
@@ -430,7 +431,7 @@ EXEC sp_executesql @sql;
           ,[NAME]
           ,''' + @Flag + ''' AS [FLAG]
         FROM 
-            [DC1-SRV-KC01].[CashDB51].[dbo].[MOL]';
+            [' + @SourceServer + '].[CashDB51].[dbo].[MOL]';
     EXEC sp_executesql @sql;
   
 END
