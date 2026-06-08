@@ -16,6 +16,11 @@ CREATE OR ALTER PROCEDURE [silver].[usp_LoadSilverOperativeTables]
 
 SET @sql = N'
     INSERT INTO [silver].[oper_cm_payments]
+    (
+        [UNIQ],[SCODE],[CHECKNUM],[CASHCODE],[SHIFT],[FSHIFT],[FSERIAL],[DATE],[TIME]
+      ,[OPCODE],[OP_TYPE],[VALCODE],[VC_TYPE],[VALTYPE],[VT_TYPE]
+      ,[NRATE],[VSUM],[SUMB],[SUMN],[SUME],[POSITION],[SERVER],[SNAME]
+    )
 SELECT P.[UNIQ]
       ,P.[SCODE]
       ,P.[CHECKNUM]
