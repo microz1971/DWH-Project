@@ -200,7 +200,7 @@ CREATE TABLE [gold].[rep_discounts](
 	[STORE] [nvarchar](100) NULL,
 	[CASHCODE] [nvarchar](10) NULL,
 	[CASHIER] [nvarchar](200) NULL,
-    [DISCOUNT_CARD] [nvarchar](20) NULL,
+    [DISCOUNT_CARD] [nvarchar](100) NULL,
 	[CHECKNUM] [int] NULL,
 	[DATE] [date] NULL,
 	[TIME] [nvarchar](8) NULL,
