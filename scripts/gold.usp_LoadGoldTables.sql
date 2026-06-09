@@ -241,6 +241,158 @@ GROUP BY
 	L.Duty,L.Location,L.StoreName,ACT.CASHCODE,ACT.FSERIAL,ACT.DATE,ACT.TIME,ACT.PRICE,ACT.SUMB';
     EXEC sp_executesql @sql;
 /*===================================================================================================*/
+SET @sql = N'
+;WITH BaseData AS
+(
+    SELECT
+        ACT.UNIQ,
+        ACT.CASHCODE,
+        ACT.SName,
+        ACT.CHECKNUM,
+        ACT.SHIFT,
+        ACT.DATE,
+        LEFT(ACT.TIME, 8) AS [TIME],
+        ACT.NAME,
+        ACT.CODE,
+        ACT.BQUANT,
+        ACT.PRICE,
+        ACT.SUMI,
+        ACT.DISC_ABS,
+        ACT.DISC_PERC,
+        ACT.SUMN,
+        ACT.POSITION,
+        (CASE WHEN PN.DATA = ''PROMODISC'' THEN PN.VALUE END) AS PromoDiscNumber
+    FROM 
+        silver.act_items ACT
+    LEFT JOIN silver.ac_dopdata_promonumber PN ON PN.UNIQ = ACT.UNIQ AND PN.POSITION = ACT.POSITION
+    WHERE
+        (ACT.DISC_ABS > 0 OR ACT.DISC_PERC > 0) AND ACT.NAME NOT LIKE ''%Товар упакован в cейф-пакет%''
+),
+PromoNames AS
+(
+    SELECT
+        BD.*,
+        RPI.Description
+    FROM 
+        BaseData BD
+    LEFT JOIN silver.ref_promoid RPI ON RPI.PROMOID = BD.PromoDiscNumber AND RPI.FLAG = CASE 
+                                                                                    WHEN BD.CASHCODE LIKE ''1%'' THEN ''RUDP''
+                                                                                    WHEN BD.CASHCODE LIKE ''28%'' THEN ''KZDF'' 
+                                                                                    ELSE ''RUDF''
+                                                                                  END
+),
+AvoltaClub AS
+(
+    SELECT
+        PN.*,
+        MAX(CASE WHEN AC.DATA = ''NDISC'' AND PN.Description LIKE ''%Avolta%'' THEN AC.VALUE ELSE N''-'' END) AS [AVOLTA_LEVEL],
+        MAX(CASE WHEN AC.DATA = ''LCUSID'' AND PN.Description LIKE ''%Avolta%'' THEN AC.VALUE ELSE N''-'' END) AS [AVOLTA_ID]
+    FROM
+        PromoNames PN
+    LEFT JOIN silver.ac_dopdata_avoltaclub AC ON AC.UNIQ = PN.UNIQ AND AC.CASHCODE = PN.CASHCODE AND AC.CHECKNUM = PN.CHECKNUM
+    WHERE
+        PN.Description <> ''Скидка на сейф-пакет''
+    GROUP BY
+        PN.UNIQ,
+        PN.CASHCODE,
+        PN.SName,
+        PN.CHECKNUM,
+        PN.SHIFT,
+        PN.DATE,
+        PN.[TIME],
+        PN.NAME,
+        PN.CODE,
+        PN.BQUANT,
+        PN.PRICE,
+        PN.SUMI,
+        PN.DISC_ABS,
+        PN.DISC_PERC,
+        PN.SUMN,
+        PN.POSITION,
+        PN.Description,
+        PN.PromoDiscNumber
+),
+Coupons AS
+(
+    SELECT
+        AC.*,
+        MAX(CASE WHEN C.VALUE = ''741123369986'' THEN N''Сотрудники и Экипаж 20%''
+                 WHEN C.VALUE = ''741123369987'' THEN N''Руководители подразделений 25%''
+                 WHEN C.VALUE = ''741123369988'' THEN N''Руководители структур 30%''
+                 WHEN C.VALUE = ''741123369989'' THEN N''Акционеры и партнёры 50%''
+                 WHEN C.VALUE = ''0242'' THEN N''VIP 15% VKO DP''
+                 WHEN C.VALUE = ''10999'' THEN N''VIP АэроРегион 15%''
+                 WHEN C.VALUE = ''741123369990'' THEN N''Предзаказ 10%''
+                 WHEN C.VALUE = ''0241'' THEN N''Регстаэр ВИП 15% VKO Pilot Shop''
+                 WHEN C.VALUE = ''6051'' THEN N''Регстаэр ВИП 20%''
+                 WHEN C.VALUE = ''0217'' THEN N''Регстаэр ВИП 25% VKO Pilot Shop''
+                 WHEN C.VALUE = ''6054'' THEN N''Регстаэр ВИП 30%''
+                 WHEN C.VALUE IN (''150200'',''150300'',''150333'',''150400'',''150222'') THEN N''Регстаэр ВИП 50% VKO T3''
+                 ELSE ''-'' END) AS [DISCOUNT_CARDS],
+        MAX(CASE WHEN C.VALUE LIKE ''999%'' THEN C.VALUE ELSE N''-'' END) AS [VIP_VOUCHER],
+        MAX(CASE WHEN C.VALUE LIKE ''FANDS%'' THEN N''FUN AND SUN'' ELSE N''-'' END) AS [PARTNER_VOUCHER]
+
+    FROM
+        AvoltaClub AC
+    LEFT JOIN silver.ac_dopdata_coupons C ON C.POS_NUMBER = AC.CASHCODE AND C.RECEIPT_NUMBER = AC.CHECKNUM AND C.UNIQ = AC.UNIQ
+    GROUP BY
+        AC.UNIQ,
+        AC.CASHCODE,
+        AC.SName,
+        AC.CHECKNUM,
+        AC.SHIFT,
+        AC.DATE,
+        AC.[TIME],
+        AC.NAME,
+        AC.CODE,
+        AC.BQUANT,
+        AC.PRICE,
+        AC.SUMI,
+        AC.DISC_ABS,
+        AC.DISC_PERC,
+        AC.SUMN,
+        AC.POSITION,
+        AC.Description,
+        AC.PromoDiscNumber,
+        AC.AVOLTA_LEVEL,
+        AC.AVOLTA_ID
+)
+INSERT INTO [gold].[rep_discounts]
+(
+    [COMPANY],[DUTY],[LOCATION],[STORE],[CASHCODE],[CASHIER],[DISCOUNT_CARD],[CHECKNUM],[DATE],[TIME]
+      ,[ITEM_NAME],[ITEM_CODE],[QUANTITY],[ITEM_PRICE],[PRICE_AFTER_DISCOUNT],[DISCOUNT_AMOUNT],[TOTAL_IN_NATIONAL]
+      ,[AVOLTA_LEVEL],[AVOLTA_ID],[VIP_VOUCHER_CODE],[PARTNER_VOUCHER_CODE]
+)
+SELECT
+    L.Company,
+    L.Duty,
+    L.Location,
+    L.StoreName,
+    C.CASHCODE,
+    C.SName,
+    C.DISCOUNT_CARDS,
+    C.CHECKNUM,
+    C.DATE,
+    C.TIME,
+    C.NAME,
+    C.CODE,
+    C.BQUANT,
+    C.PRICE,
+    C.SUMI,
+    C.DISC_ABS,
+    C.SUMN,
+    C.Description,
+    C.AVOLTA_LEVEL,
+    C.AVOLTA_ID,
+    C.VIP_VOUCHER,
+    C.PARTNER_VOUCHER
+FROM
+    Coupons C
+LEFT JOIN bronze.ref_locations L ON L.StoreCode = LEFT(C.CASHCODE, 3)
+WHERE
+    CAST(C.DATE AS DATE) = @YesterdayParam';
+    EXEC sp_executesql @sql;
+/*===================================================================================================*/
 
 END
 GO
