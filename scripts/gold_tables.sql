@@ -211,6 +211,7 @@ CREATE TABLE [gold].[rep_discounts](
 	[PRICE_AFTER_DISCOUNT] [decimal](10,2) NULL,
 	[DISCOUNT_AMOUNT] [decimal](10,2) NULL,
 	[TOTAL_IN_NATIONAL] [decimal](10,2) NULL,
+	[PROMO_NAME] [nvarchar](200) NULL,
 	[AVOLTA_LEVEL] [nvarchar](20) NULL,
 	[AVOLTA_ID] [nvarchar](20) NULL,
 	[VIP_VOUCHER_CODE] [nvarchar](50) NULL,
