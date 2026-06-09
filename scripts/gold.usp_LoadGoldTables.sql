@@ -18,12 +18,12 @@ CREATE OR ALTER PROCEDURE [gold].[usp_LoadGoldTables]
         DECLARE @Yesterday DATE = DATEADD(DAY, -1, GETDATE());
         -- Объявляем параметры для sp_executesql
         DECLARE @Params NVARCHAR(MAX) = N'@YesterdayParam DATE';
-/*===================================================================================================*/
+/*=============================== rep_cashiers ====================================================================*/
 SET @sql = N'
     INSERT INTO [gold].[rep_cashiers] 
         ([COMPANY], [LOCATION], [CASHIER], [QTY], [TOTAL])
 
-SELECT
+   SELECT
 	L.COMPANY,
 	L.LOCATION,
 	I.SNAME,
@@ -35,7 +35,7 @@ LEFT JOIN bronze.ref_locations L ON L.StoreCode = LEFT(I.CASHCODE, 3)
 GROUP BY
 	I.SNAME, L.COMPANY, L.LOCATION';
 EXEC sp_executesql @sql;
-/*===================================================================================================*/
+/*================================= rep_shifts  ==================================================================*/
 SET @sql = N'
 ;WITH BaseShifts AS
 (
@@ -125,7 +125,7 @@ LEFT JOIN CashierNames CF ON CF.CASHCODE = O.CASHCODE AND CF.FSHIFT  = O.FSHIFT 
 LEFT JOIN CashierNames CL ON CL.CASHCODE = O.CASHCODE AND CL.FSHIFT  = O.FSHIFT AND CL.RN_LAST = 1
 LEFT JOIN bronze.ref_locations L ON L.StoreCode = LEFT(O.CASHCODE, 3)';
 EXEC sp_executesql @sql --, @Params, @YesterdayParam = @Yesterday;
-/*===================================================================================================*/
+/*================================ rep_yandex ===================================================================*/
 SET @sql = N'
 INSERT INTO [gold].[rep_yandex]
 ([DATE],[TIME],[TR_TYPE],[PAYMENT_TYPE],[COMPANY],[DUTY],[LOCATION],[STORE],[CHECKNUM],[CASHCODE],[TOTAL],[CASHIER])
@@ -150,10 +150,10 @@ FROM
 LEFT JOIN silver.ac_dopdata_yandex Y ON Y.UNIQ = P.UNIQ
 LEFT JOIN bronze.ref_locations L ON L.StoreCode = LEFT(P.CASHCODE, 3)
 WHERE
-	P.CHR = ''YP'' --AND CAST(P.DATE AS DATE) = @YesterdayParam';
-	EXEC sp_executesql @sql--, @Params, @YesterdayParam = @Yesterday;
+	P.CHR = ''YP'' AND CAST(P.DATE AS DATE) = @YesterdayParam';
+	EXEC sp_executesql @sql, @Params, @YesterdayParam = @Yesterday;
 
-/*===================================================================================================*/
+/*=============================== dash_yandex ====================================================================*/
 SET @sql = N'
 ;WITH main AS
 (
@@ -218,29 +218,7 @@ LEFT JOIN bronze.ref_locations L on L.StoreCode = LEFT(M.CASHCODE, 3)
 GROUP BY
     L.[Location], [YEAR],[QUARTER],[MONTH],[WEEK]';
     EXEC sp_executesql @sql;
-/*===================================================================================================*/
-SET @sql = N'
-INSERT INTO [gold].[rep_uin]
-(
-	[OP_TYPE],[ITEM_CODE],[ITEM_NAME],[UIN],[SHIFT],[RECEIPT_NUMBER],[COMPANY],[DUTY]
-      ,[LOCATION],[STORE],[POS_NUMBER],[FP_SERIAL],[FN_SERIAL],[DATE],[TIME],[PRICE],[TOTAL]
-)
-
-SELECT
-	ACT.OP_TYPE,ACT.CODE,ACT.NAME,UIN.VALUE,ACT.SHIFT,ACT.CHECKNUM,L.Company,L.Duty,
-	L.Location,L.StoreName,ACT.CASHCODE,ACT.FSERIAL,MAX(ACA.FNSERIAL) AS [FNSERIAL],
-	ACT.DATE,LEFT(ACT.TIME, 8) AS [TIME],ACT.PRICE,ACT.SUMB
-FROM
-	silver.act_items ACT
-LEFT JOIN bronze.ref_locations L ON L.StoreCode = LEFT(ACT.CASHCODE, 3)
-LEFT JOIN silver.aca_fiscaldata ACA ON ACA.CASHCODE = ACT.CASHCODE AND ACA.CHECKNUM = ACT.CHECKNUM AND ACA.DATE = ACT.DATE
-INNER JOIN silver.ac_dopdata_uin UIN ON UIN.UNIQ = ACT.UNIQ AND UIN.NUMBER = ACT.CASHCODE AND UIN.RECEIPT_NUMBER = ACT.CHECKNUM
-									AND UIN.POSITION = ACT.POSITION
-GROUP BY
-	ACT.OP_TYPE,ACT.CODE,ACT.NAME,UIN.VALUE,ACT.POSITION,ACT.SHIFT,ACT.CHECKNUM,L.Company,
-	L.Duty,L.Location,L.StoreName,ACT.CASHCODE,ACT.FSERIAL,ACT.DATE,ACT.TIME,ACT.PRICE,ACT.SUMB';
-    EXEC sp_executesql @sql;
-/*===================================================================================================*/
+/*============================== rep_discounts =====================================================================*/
 SET @sql = N'
 ;WITH BaseData AS
 (
@@ -392,7 +370,74 @@ LEFT JOIN bronze.ref_locations L ON L.StoreCode = LEFT(C.CASHCODE, 3)
 WHERE
     CAST(C.DATE AS DATE) = @YesterdayParam';
     EXEC sp_executesql @sql;
-/*===================================================================================================*/
+/*================================= dash_discounts ==================================================================*/
+SET @sql = N'
+;WITH ExchangeRates AS
+(
+	SELECT
+	DATE,
+	MAX(CASE WHEN VALCODE = 3 THEN NRATE ELSE 1 END) AS NRATE_EUR,
+	MAX(CASE WHEN VALCODE = 5 THEN NRATE ELSE 1 END) AS NRATE_RUB,
+	SERVER
+	FROM
+		silver.acm_payments
+	GROUP BY
+		DATE, SERVER
+),
+BaseData AS
+(
+	SELECT
+		L.Company,
+		L.Duty,
+		L.Location,
+		L.StoreName,
+		ACT.SERVER,
+		ACT.DATE,
+		SUM(ACT.PRICE) AS [PRICE],
+		SUM(ACT.DISC_ABS) AS [DISCOUNT],
+		SUM(ACT.SUMB) AS [TOTAL]
+	FROM
+		silver.act_items ACT
+	LEFT JOIN bronze.ref_locations L ON L.StoreCode = LEFT(ACT.CASHCODE, 3)
+	WHERE
+		(ACT.DISC_ABS > 0 OR ACT.DISC_PERC > 0)
+	GROUP BY
+		L.Company,
+		L.Duty,
+		L.Location,
+		L.StoreName,
+		ACT.SERVER,
+		ACT.DATE
+)
+INSERT INTO [gold].[dash_discounts]
+(
+	[YEAR],[QUARTER],[MONTH],[WEEK],[COMPANY],[DUTY],[LOCATION],[STORE],[DATE],[PRICE RUB]
+      ,[DISCOUNT RUB],[TOTAL RUB]
+)
+SELECT
+	YEAR(BD.DATE) as [YEAR],
+    DATENAME(Q, BD.DATE) as [QUARTER],
+    DATENAME(M, BD.DATE) as [MONTH],
+    DATEPART(iso_week, BD.DATE) as [WEEK],
+	BD.Company,
+	BD.Duty,
+	BD.Location,
+	BD.StoreName,
+	BD.DATE,
+	CASE WHEN BD.SERVER = ''DC1-SRV-KC01'' THEN (BD.PRICE * ER.NRATE_EUR) 
+		 WHEN BD.SERVER = ''DC1-SRV-KC03'' THEN ((BD.PRICE * ER.NRATE_EUR) / ER.NRATE_RUB)  
+		 ELSE BD.PRICE END AS [PRICE RUB],
+	CASE WHEN BD.SERVER = ''DC1-SRV-KC01'' THEN (BD.DISCOUNT * ER.NRATE_EUR) 
+		 WHEN BD.SERVER = ''DC1-SRV-KC03'' THEN ((BD.DISCOUNT * ER.NRATE_EUR) / ER.NRATE_RUB) 
+		 ELSE BD.DISCOUNT END AS [DISCOUNT RUB],
+	CASE WHEN BD.SERVER = ''DC1-SRV-KC01'' THEN (BD.TOTAL * ER.NRATE_EUR) 
+		 WHEN BD.SERVER = ''DC1-SRV-KC03'' THEN ((BD.TOTAL * ER.NRATE_EUR) / ER.NRATE_RUB) 
+		 ELSE BD.TOTAL END AS [TOTAL RUB]
+
+FROM
+	BaseData BD
+LEFT JOIN ExchangeRates ER ON ER.DATE = BD.DATE and ER.SERVER = BD.SERVER';
+EXEC sp_executesql @sql;
 
 END
 GO
