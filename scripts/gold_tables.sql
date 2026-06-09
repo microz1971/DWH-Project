@@ -223,3 +223,26 @@ GO
 ALTER TABLE [gold].[rep_discounts] ADD  DEFAULT (getdate()) FOR [DWH_CREATE_DATE]
 GO
 CREATE INDEX IX_Discounts ON [gold].[rep_discounts]([CASHCODE], [CHECKNUM], [DATE], [ITEM_CODE])
+
+/*==============DASH: Discounts==============================================*/	
+IF OBJECT_ID('[gold].[rep_discounts]', 'U') IS NOT NULL
+    DROP TABLE [gold].[rep_discounts];
+CREATE TABLE [gold].[dash_discounts](
+	[YEAR] [int] NULL,
+	[QUARTER] [int] NULL,
+	[MONTH] [nvarchar](10) NULL,
+	[WEEK] [int] NULL,
+	[COMPANY] [nvarchar](100) NULL,
+	[DUTY] [nvarchar](2) NULL,
+	[LOCATION] [nvarchar](100) NULL,
+	[STORE] [nvarchar](100) NULL,
+	[DATE] [date] NULL,
+	[PRICE RUB] [decimal](10, 2) NULL,
+	[DISCOUNT RUB] [decimal](10, 2) NULL,
+	[TOTAL RUB] [decimal](10, 2) NULL,
+	[DWH_CREATE_DATE] [datetime2](7) NULL
+) ON [PRIMARY]
+GO
+
+ALTER TABLE [gold].[dash_discounts] ADD  DEFAULT (getdate()) FOR [DWH_CREATE_DATE]
+GO
