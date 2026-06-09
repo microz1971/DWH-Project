@@ -188,3 +188,37 @@ GO
 
 CREATE INDEX IX_UIN ON [gold].[rep_uin]([ITEM_CODE],[UIN],[DATE],[COMPANY]);
 GO
+
+/*==============REPORT: Discounts==============================================*/	
+IF OBJECT_ID('[gold].[rep_discounts]', 'U') IS NOT NULL
+    DROP TABLE [gold].[rep_discounts];
+
+CREATE TABLE [gold].[rep_discounts](
+	[COMPANY] [nvarchar](30) NULL,
+	[DUTY] [nvarchar](2) NULL,
+	[LOCATION] [nvarchar](100) NULL,
+	[STORE] [nvarchar](100) NULL,
+	[CASHCODE] [nvarchar](10) NULL,
+	[CASHIER] [nvarchar](200) NULL,
+    [DISCOUNT_CARD] [nvarchar](20) NULL,
+	[CHECKNUM] [int] NULL,
+	[DATE] [date] NULL,
+	[TIME] [nvarchar](8) NULL,
+	[ITEM_NAME] [nvarchar](200) NULL,
+	[ITEM_CODE] [nvarchar](20) NULL,
+	[QUANTITY] [int] NULL,
+	[ITEM_PRICE] [decimal](10,2) NULL,
+	[PRICE_AFTER_DISCOUNT] [decimal](10,2) NULL,
+	[DISCOUNT_AMOUNT] [decimal](10,2) NULL,
+	[TOTAL_IN_NATIONAL] [decimal](10,2) NULL,
+	[AVOLTA_LEVEL] [nvarchar](20) NULL,
+	[AVOLTA_ID] [nvarchar](20) NULL,
+	[VIP_VOUCHER_CODE] [nvarchar](50) NULL,
+	[PARTNER_VOUCHER_CODE] [nvarchar](50) NULL,	
+	[DWH_CREATE_DATE] [datetime2](7) NULL
+) ON [PRIMARY]
+GO
+
+ALTER TABLE [gold].[rep_discounts] ADD  DEFAULT (getdate()) FOR [DWH_CREATE_DATE]
+GO
+CREATE INDEX IX_Discounts ON [gold].[rep_discounts]([CASHCODE], [CHECKNUM], [DATE], [ITEM_CODE])
