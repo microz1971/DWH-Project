@@ -535,3 +535,18 @@ CREATE TABLE [bronze].[oper_pos_cm_payments](
 	[POSITION] [smallint] NULL,
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
+
+/*==============REF IATA Codes==============================================*/
+CREATE TABLE [bronze].[ref_destinationcodes](
+	[IATA] [varchar](3) NOT NULL,
+	[CITY] [varchar](100) NOT NULL,
+	[COUNTRY_CODE] [varchar](2) NOT NULL,
+	[COUNTRY_NAME] [varchar](100) NOT NULL,
+	[DUTY] [varchar](2) NOT NULL
+
+PRIMARY KEY CLUSTERED 
+(
+	[IATA] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
