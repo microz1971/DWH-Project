@@ -436,6 +436,48 @@ FROM
 	BaseData BD
 LEFT JOIN ExchangeRates ER ON ER.DATE = BD.DATE and ER.SERVER = BD.SERVER';
 EXEC sp_executesql @sql;
+/*================================= rep_uin ==================================================================*/
+SET @sql = N'
+;WITH FNSERIAL_CTE AS
+(
+	SELECT DISTINCT
+		CASHCODE,
+		MAX(ECTSERIAL) AS ECTSERIAL
+	FROM
+		silver.acc_receipts
+	WHERE 
+		ECTSERIAL != ''
+	GROUP BY CASHCODE
+)
+INSERT INTO gold.rep_uin
+(
+	[OP_TYPE],[ITEM_CODE],[ITEM_NAME],[UIN],[SHIFT],[RECEIPT_NUMBER],[COMPANY],[DUTY],[LOCATION]
+      ,[STORE],[POS_NUMBER],[FP_SERIAL],[FN_SERIAL],[DATE],[TIME],[PRICE],[TOTAL]
+)
+SELECT
+	ACT.OP_TYPE,
+	ACT.CODE,
+	ACT.NAME,
+	UIN.VALUE,
+	ACT.SHIFT,
+	ACT.CHECKNUM,
+	L.Company,
+	L.Duty,
+	L.Location,
+	L.StoreName,
+	ACT.CASHCODE,
+	ACT.FSERIAL,
+	CTE.ECTSERIAL,
+	ACT.DATE,
+	LEFT(ACT.TIME, 8) AS [TIME],
+	ACT.PRICE,
+	ACT.SUMB
+FROM
+	silver.act_items ACT
+INNER JOIN silver.ac_dopdata_uin UIN ON UIN.UNIQ = ACT.UNIQ AND UIN.POSITION =ACT.POSITION
+LEFT JOIN bronze.ref_locations L ON L.StoreCode = LEFT(ACT.CASHCODE, 3)
+INNER JOIN FNSERIAL_CTE CTE ON CTE.CASHCODE = ACT.CASHCODE';
+EXEC sp_executesql @sql;
 
 END
 GO
