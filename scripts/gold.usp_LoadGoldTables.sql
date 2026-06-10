@@ -366,9 +366,7 @@ SELECT
     C.PARTNER_VOUCHER
 FROM
     Coupons C
-LEFT JOIN bronze.ref_locations L ON L.StoreCode = LEFT(C.CASHCODE, 3)
-WHERE
-    CAST(C.DATE AS DATE) = @YesterdayParam';
+LEFT JOIN bronze.ref_locations L ON L.StoreCode = LEFT(C.CASHCODE, 3)';
     EXEC sp_executesql @sql;
 /*================================= dash_discounts ==================================================================*/
 SET @sql = N'
