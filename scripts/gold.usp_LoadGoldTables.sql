@@ -150,8 +150,8 @@ FROM
 LEFT JOIN silver.ac_dopdata_yandex Y ON Y.UNIQ = P.UNIQ
 LEFT JOIN bronze.ref_locations L ON L.StoreCode = LEFT(P.CASHCODE, 3)
 WHERE
-	P.CHR = ''YP'' AND CAST(P.DATE AS DATE) = @YesterdayParam';
-	EXEC sp_executesql @sql, @Params, @YesterdayParam = @Yesterday;
+	P.CHR = ''YP''';
+	EXEC sp_executesql @sql;
 
 /*=============================== dash_yandex ====================================================================*/
 SET @sql = N'
@@ -446,7 +446,7 @@ SET @sql = N'
 	FROM
 		silver.acc_receipts
 	WHERE 
-		ECTSERIAL != ''
+		ECTSERIAL != ''''
 	GROUP BY CASHCODE
 )
 INSERT INTO gold.rep_uin
