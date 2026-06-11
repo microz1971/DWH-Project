@@ -246,3 +246,28 @@ GO
 
 ALTER TABLE [gold].[dash_discounts] ADD  DEFAULT (getdate()) FOR [DWH_CREATE_DATE]
 GO
+
+/*==============REPORT: Destinations==============================================*/	
+IF OBJECT_ID('[gold].[rep_destinations]', 'U') IS NOT NULL
+    DROP TABLE [gold].[rep_destinations];
+
+CREATE TABLE [gold].[rep_destinations](
+	[CITY] [nvarchar](30) NULL,
+	[DATE] [date] NULL,
+	[DIRECTION] [nvarchar](10) NULL,
+	[PRICE_TYPE] [nvarchar](50) NULL,
+	[DEPARTURE_CODE] [nvarchar](10) NULL,
+	[ARRIVAL_CODE] [nvarchar](10) NULL,
+	[DEPARTURE_CITY] [nvarchar](100) NULL,
+	[ARRIVAL_CITY] [nvarchar](100) NULL,
+	[DEPARTURE_COUNTRY] [nvarchar](100) NULL,
+	[ARRIVAL_COUNTRY] [nvarchar](100) NULL,
+	[FLIGHT_NUMBER] [nvarchar](20) NULL,
+	[QTY_OF_RECEIPTS] [int] NULL,
+	[TOTAL_RUB] [decimal](10, 2) NULL,
+	[DWH_CREATE_DATE] [datetime2](7) NULL
+) ON [PRIMARY]
+GO
+
+ALTER TABLE [gold].[rep_destinations] ADD  DEFAULT (getdate()) FOR [DWH_CREATE_DATE]
+GO
