@@ -1,23 +1,51 @@
 USE [DataWarehouse]
 GO
 
-/****** Объект:  StoredProcedure [silver].[usp_LoadSilverTables]    Дата создания скрипта: 03.06.2026 9:39:19 ******/ 
+/****** Объект:  StoredProcedure [gold].[usp_LoadGoldTables]    Дата создания скрипта: 11.06.2026 11:27:10 ******/ 
 SET ANSI_NULLS ON
 GO
 
 SET QUOTED_IDENTIFIER ON
 GO
 
-
-CREATE OR ALTER PROCEDURE [gold].[usp_LoadGoldTables]
+ALTER   PROCEDURE [gold].[usp_LoadGoldTables]
     AS
     BEGIN
         SET NOCOUNT ON;
 /*===================================================================================================*/
+SELECT
+    UNIQ,
+    MAX(CASE WHEN DATA = 'DP' THEN VALUE END) AS [DEPARTURE CODE],
+    MAX(CASE WHEN DATA = 'DS' THEN VALUE END) AS [DESTINATION CODE],
+    MAX(CASE WHEN DATA = 'FL' THEN VALUE END) AS [FLIGHT NUMBER]
+INTO #PaxData
+FROM silver.ac_dopdata_pax
+GROUP BY UNIQ;
+
+CREATE INDEX IX_PaxData_UNIQ ON #PaxData(UNIQ);
+
+SELECT
+    UNIQ,
+    MAX(PriceTypeName) AS [PRICE_TYPE]
+INTO #PriceType
+FROM silver.act_items
+GROUP BY UNIQ;
+
+CREATE INDEX IX_PriceType_UNIQ ON #PriceType(UNIQ);
+
+SELECT
+	UNIQ,
+	MAX(CASE WHEN VALCODE = 5 THEN NRATE ELSE 1 END) AS NRATE_RUB
+INTO #ER
+FROM
+	silver.acm_payments
+GROUP BY UNIQ;
+
         DECLARE @sql NVARCHAR(MAX);
         DECLARE @Yesterday DATE = DATEADD(DAY, -1, GETDATE());
         -- Объявляем параметры для sp_executesql
         DECLARE @Params NVARCHAR(MAX) = N'@YesterdayParam DATE';
+
 /*=============================== rep_cashiers ====================================================================*/
 SET @sql = N'
     INSERT INTO [gold].[rep_cashiers] 
@@ -474,13 +502,75 @@ SELECT
 	ACT.SUMB
 FROM
 	silver.act_items ACT
-INNER JOIN silver.ac_dopdata_uin UIN ON UIN.UNIQ = ACT.UNIQ AND UIN.POSITION =ACT.POSITION
+INNER JOIN silver.ac_dopdata_uin UIN ON UIN.UNIQ = ACT.UNIQ AND UIN.POSITION = ACT.POSITION
 LEFT JOIN bronze.ref_locations L ON L.StoreCode = LEFT(ACT.CASHCODE, 3)
 INNER JOIN FNSERIAL_CTE CTE ON CTE.CASHCODE = ACT.CASHCODE';
 EXEC sp_executesql @sql;
 
+/*================================= rep_destinations ==================================================================*/
+
+
+SET @sql = N'
+INSERT INTO [gold].[rep_destinations]
+(
+     [CITY]
+    ,[DATE]
+    ,[DIRECTION]
+    ,[PRICE_TYPE]
+    ,[DEPARTURE_CODE]
+    ,[ARRIVAL_CODE]
+    ,[DEPARTURE_CITY]
+    ,[ARRIVAL_CITY]
+    ,[DEPARTURE_COUNTRY]
+    ,[ARRIVAL_COUNTRY]
+    ,[FLIGHT_NUMBER]
+    ,[QTY_OF_RECEIPTS]
+    ,[TOTAL_RUB]
+    )
+SELECT
+    L.CITY,
+    ACC.DATE_BEG,
+    CASE WHEN PAX.[DEPARTURE CODE] = L.[IATA] THEN N''Вылет''
+         ELSE N''Прилёт''
+    END AS [DIRECTION],
+    PT.[PRICE_TYPE],
+    ISNULL(PAX.[DEPARTURE CODE], ''NO BP'') AS [DEPARTURE CODE],
+    ISNULL(PAX.[DESTINATION CODE], ''NO BP'') AS [DESTINATION CODE],
+    ISNULL(DPC.[CITY], ''NO BP'') AS [DEP_CITY],
+    ISNULL(DSC.[CITY], ''NO BP'') AS [ARR_CITY],
+    ISNULL(DPC.[COUNTRY_NAME], ''NO BP'') AS [DEP_COUNTRY],
+    ISNULL(DSC.[COUNTRY_NAME], ''NO BP'') AS [ARR_COUNTRY],
+    ISNULL(PAX.[FLIGHT NUMBER], ''NO BP'') AS [FLIGHT NUMBER],
+    COUNT(DISTINCT ACC.UNIQ) AS [QTY],  -- DISTINCT, если нужно считать уникальные чеки
+    CASE WHEN L.CITY = N''Астана'' THEN (SUM(ACC.SUMN) / ER.NRATE_RUB) ELSE SUM(ACC.SUMN) END AS [TOTAL]
+    
+FROM silver.acc_receipts ACC
+LEFT JOIN #PaxData PAX ON PAX.UNIQ = ACC.UNIQ
+LEFT JOIN #PriceType PT ON PT.UNIQ = ACC.UNIQ
+LEFT JOIN #ER ER ON ER.UNIQ = ACC.UNIQ
+LEFT JOIN bronze.ref_locations L ON L.StoreCode = LEFT(ACC.CASHCODE, 3)
+LEFT JOIN bronze.ref_destinationcodes DPC ON DPC.IATA = PAX.[DEPARTURE CODE]
+LEFT JOIN bronze.ref_destinationcodes DSC ON DSC.IATA = PAX.[DESTINATION CODE]
+GROUP BY
+    L.CITY,
+    ACC.DATE_BEG,
+    CASE WHEN PAX.[DEPARTURE CODE] = L.[IATA] THEN N''Вылет'' ELSE N''Прилёт'' END,
+    PT.[PRICE_TYPE],
+    ISNULL(PAX.[DEPARTURE CODE], ''NO BP''),
+    ISNULL(DPC.[CITY], ''NO BP''),
+    ISNULL(PAX.[DESTINATION CODE], ''NO BP''),
+    ISNULL(DSC.[CITY], ''NO BP''),
+    ISNULL(DPC.[COUNTRY_NAME], ''NO BP''),
+    ISNULL(DSC.[COUNTRY_NAME], ''NO BP''),
+    ISNULL(PAX.[FLIGHT NUMBER], ''NO BP''),
+    ER.NRATE_RUB';
+EXEC sp_executesql @sql;
+
+DROP TABLE #PaxData;
+DROP TABLE #PriceType;
+DROP TABLE #ER;
+
 END
 GO
-
 
 
