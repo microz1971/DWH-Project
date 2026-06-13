@@ -206,6 +206,12 @@ CREATE TABLE silver.act_items
 [DWH_CREATE_DATE] [datetime2] DEFAULT GETDATE()
 );
 GO
+
+CREATE INDEX IX_act_items_SUMN 
+ON silver.act_items(SUMN) 
+INCLUDE (UNIQ, [DATE], [TIME], CHECKNUM, CASHCODE, SNAME, NAME, CODE, 
+         PRICE, DISC_ABS, VATRATE1, VATSUM1, [POSITION]);
+
 /*==============ACDopdata AvoltaClub==============================================*/
 IF OBJECT_ID('silver.ac_dopdata_avoltaclub', 'U') IS NOT NULL
     DROP TABLE silver.ac_dopdata_avoltaclub;
