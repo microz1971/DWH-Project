@@ -371,6 +371,10 @@ CREATE TABLE [bronze].[pos_salersip_data](
 );
 GO
 
+CREATE INDEX IX_pos_salersip_data_UNIQ_POSITION 
+ON bronze.pos_salersip_data(UNIQ, [POSITION]) 
+INCLUDE ([VALUE]);
+
 /*==============ACDopdata UIN data==============================================*/
 IF OBJECT_ID('bronze.pos_uin_data', 'U') IS NOT NULL
     DROP TABLE bronze.pos_uin_data;
@@ -402,6 +406,10 @@ CREATE TABLE [bronze].[ref_item_category](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+
+CREATE INDEX IX_ref_item_category_ITEM_ID 
+ON bronze.ref_item_category(ITEM_ID) 
+INCLUDE (CATEGORY_CODE, CATEGORY_NAME);
 
 /*==============Locations List==============================================*/	
 CREATE TABLE [bronze].[ref_locations](
