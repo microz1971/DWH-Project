@@ -569,3 +569,28 @@ PRIMARY KEY
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+/*==============OPERATIVE CT Items==============================================*/
+CREATE TABLE [bronze].[operative_pos_ct_items](
+	[UNIQ] [uniqueidentifier] NULL,
+	[CHECKNUM] [int] NULL,
+	[SCODE] [int] NULL,
+	[CASHCODE] [smallint] NULL,
+	[SHIFT] [smallint] NULL,
+	[FSHIFT] [smallint] NULL,
+	[FSERIAL] [nvarchar](20) NULL,
+	[DATE] [datetime] NULL,
+	[TIME] [datetime] NULL,
+	[OPCODE] [smallint] NULL,
+	[BCODE] [nvarchar](20) NULL,
+	[NAME] [nvarchar](32) NULL,
+	[BQUANT] [decimal](13, 3) NULL,
+	[CODE] [int] NULL,
+	[PRICETYPE] [nvarchar](32) NULL,
+	[PRICE] [decimal](13, 2) NULL,
+	[DISC_ABS] [decimal](13, 2) NULL,
+	[SUMB] [decimal](13, 2) NULL,
+	[SUMN] [decimal](13, 2) NULL,
+	[VATRATE1] [decimal](5, 2) NULL,
+	[VATSUM1] [decimal](13, 2) NULL
+) 
+GO
