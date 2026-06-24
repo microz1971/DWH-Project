@@ -383,3 +383,39 @@ GO
 
 ALTER TABLE [silver].[oper_cm_payments] ADD  DEFAULT (getdate()) FOR [DWH_CREATE_DATE]
 GO
+
+/*==============OPER CT==============================================*/	
+CREATE TABLE [silver].[operative_ct_items](
+	[UNIQ] [uniqueidentifier] NULL,
+	[CHECKNUM] [int] NULL,
+	[SCODE] [int] NULL,
+	[SNAME] [nvarchar](32) NULL,
+	[CASHCODE] [smallint] NULL,
+	[SHIFT] [smallint] NULL,
+	[FSHIFT] [smallint] NULL,
+	[FSERIAL] [nvarchar](20) NULL,
+	[DATE] [date] NULL,
+	[TIME] [time](7) NULL,
+	[OPCODE] [smallint] NULL,
+	[OP_TYPE] [nvarchar](20) NULL,
+	[BCODE] [nvarchar](20) NULL,
+	[NAME] [nvarchar](32) NULL,
+	[BQUANT] [int] NULL,
+	[CODE] [int] NULL,
+	[PRICETYPE_CODE] [nvarchar](32) NULL,
+	[PRICETYPE] [nvarchar](32) NULL,
+	[PRICE] [decimal](13, 2) NULL,
+	[DISC_PERC] [decimal](5, 2) NULL,
+	[DISC_ABS] [decimal](13, 2) NULL,
+	[SUMB] [decimal](13, 2) NULL,
+	[SUMN] [decimal](13, 2) NULL,
+	[SUME] [decimal](13, 2) NULL,
+	[VATRATE1] [decimal](5, 2) NULL,
+	[VATSUM1] [decimal](13, 2) NULL,
+	[SERVER] [nvarchar](50) NULL,
+	[DWH_CREATE_DATE] [datetime2](7) NULL
+) ON [PRIMARY]
+GO
+
+ALTER TABLE [silver].[operative_ct_items] ADD  DEFAULT (getdate()) FOR [DWH_CREATE_DATE]
+GO
