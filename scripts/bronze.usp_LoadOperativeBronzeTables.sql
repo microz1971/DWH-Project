@@ -38,6 +38,38 @@ BEGIN
         [DATE] >= CAST(GETDATE() AS DATE) 
         AND [DATE] < DATEADD(DAY, 1, CAST(GETDATE() AS DATE));';
 EXEC sp_executesql @sql;
-  
+
+-- 2. CT - info about items
+    SET @sql = N'
+    INSERT INTO bronze.operative_pos_ct_items
+    SELECT
+       [UNIQ]
+      ,[CHECKNUM]  
+      ,[SCODE]
+      ,[CASHCODE]  
+      ,[SHIFT]
+      ,[FSHIFT]
+      ,[FSERIAL]
+      ,[DATE]
+      ,[TIME]
+      ,[OPCODE]
+      ,[BCODE]
+      ,[NAME]
+      ,[BQUANT]
+      ,[CODE]
+      ,[PRICETYPE]
+      ,[PRICE]
+      ,[DISC_ABS]
+      ,[SUMB]
+      ,[SUMN]
+      ,[SUME]
+      ,[VATRATE1]
+      ,[VATSUM1]
+    FROM 
+        [' + @SourceServer + '].[CashDB51].[dbo].[CT]
+    WHERE 
+        [DATE] >= CAST(GETDATE() AS DATE) 
+        AND [DATE] < DATEADD(DAY, 1, CAST(GETDATE() AS DATE));';
+        EXEC sp_executesql @sql;
 END
 GO
