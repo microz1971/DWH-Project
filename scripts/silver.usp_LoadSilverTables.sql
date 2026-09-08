@@ -1,19 +1,14 @@
-USE DataWarehouse;
-GO
-
-SET ANSI_NULLS ON
-GO
-
-SET QUOTED_IDENTIFIER ON
-GO
-
-CREATE PROCEDURE [silver].[usp_LoadSilverTables]
+CREATE OR ALTER PROCEDURE [silver].[usp_LoadSilverTables]
     AS
     BEGIN
         SET NOCOUNT ON;
 
         DECLARE @sql NVARCHAR(MAX);
+/*=================================================
+INSERT-bloks from Bronze layer to Silver layer
+===================================================*/
 
+/*=====1. Yandex data=====*/
 SET @sql = N'
     INSERT INTO silver.ac_dopdata_yandex 
     ([UNIQ],[DATE],[CHECKNUM],[CASHCODE],[SHIFT],[VALUE],[SERVER])
@@ -34,7 +29,7 @@ SET @sql = N'
     FROM [DataWarehouse].[bronze].[pos_ac_dopdata]';
 EXEC sp_executesql @sql;
 
-
+/*=====2. Fiscal data=====*/
 SET @sql = N'
     INSERT INTO silver.aca_fiscaldata
     ([UNIQ],[CASHCODE],[CHECKNUM],[DATE],[TIME],[FSum],[FSign],[FNFD],[FSHIFT],[FNum],[FNSERIAL],[SERVER])
@@ -58,6 +53,7 @@ SET @sql = N'
     FROM [DataWarehouse].[bronze].[pos_aca_fiscaldata]';
 EXEC sp_executesql @sql;
 
+/*=====3. Receipts=====*/
 SET @sql = N'
     INSERT INTO [silver].[acc_receipts]
     ([UNIQ],[TR_TYPE],[CHECKNUM],[SCODE],[CASHCODE],[SHIFT],[FSHIFT],[FSERIAL],[ECTSERIAL],[ECTCHECK]
@@ -99,6 +95,7 @@ SET @sql = N'
     WHERE (SUMN > 0 AND PayType IS NOT NULL) OR SUMN < 0';
 EXEC sp_executesql @sql;
 
+/*=====4. Cashier logins=====*/
 SET @sql = N'
     INSERT INTO [silver].[acl_logins]
     ([UNIQ],[CASHCODE],[SHIFT],[SCODE],[SNAME],[OPCODE],[OPDATE],[SERVER])
@@ -119,6 +116,7 @@ SET @sql = N'
     FROM [DataWarehouse].[bronze].[pos_acl_logins]';
 EXEC sp_executesql @sql;
 
+/*=====5. Payments=====*/
 SET @sql = N'
     INSERT INTO [silver].[acm_payments]
     ([UNIQ],[CHECKNUM],[CASHCODE],[SHIFT],[FSHIFT],[FSERIAL],[DATE],[TIME],[OPCODE],[OP_TYPE]
@@ -156,6 +154,7 @@ SET @sql = N'
                WHEN [VALCODE] = 30 THEN N''Система быстрых платежей QR''
                WHEN [VALCODE] = 31 THEN N''СБП Оффлайн''
                WHEN [VALCODE] = 32 THEN N''Яндекс Пэй''
+               WHEN [VALCODE] = 40 THEN N''KYFO''
         END AS [VC_TYPE]
          ,[VALTYPE]
          ,CASE WHEN [VALTYPE] = 1 THEN N''Наличные''
@@ -173,11 +172,12 @@ SET @sql = N'
                WHEN CASHCODE like ''28%'' THEN ''DC1-SRV-KC03''
                ELSE ''DC1-SRV-KC01''
         END AS [SERVER]
-         ,[SNAME]
+        ,[SNAME]
     FROM [DataWarehouse].[bronze].[pos_acm_payments]
     WHERE [OPCODE] IN (''72'',''76'',''82'',''80'',''70'',''74'')';
 EXEC sp_executesql @sql;
 
+/*=====6. Shifts=====*/
 SET @sql = N'
     INSERT INTO [silver].[acs_shifts]
     (
@@ -206,6 +206,7 @@ SET @sql = N'
     WHERE CHECKNUM1 != 0';
 EXEC sp_executesql @sql;
 
+/*=====7. Sold/Returned items=====*/
 SET @sql = N'
 INSERT INTO [silver].[act_items]
 (
@@ -235,6 +236,7 @@ SELECT [UNIQ]
 FROM [DataWarehouse].[bronze].[pos_act_items]';
 EXEC sp_executesql @sql;
 
+/*=====8. Promo coupons=====*/
 SET @sql = N'
 INSERT INTO [silver].[ac_dopdata_coupons]
 (
@@ -262,6 +264,7 @@ SELECT [UNIQ]
 FROM [DataWarehouse].[bronze].[pos_coupons_data]';
 EXEC sp_executesql @sql;
 
+/*=====9. Promo AvoltaClub=====*/
 SET @sql = N'
 INSERT INTO [silver].[ac_dopdata_avoltaclub]
 ([UNIQ],[DATE],[CHECKNUM],[CASHCODE],[SHIFT],[DATA],[TYPE],[VALUE],[SERVER])
@@ -283,6 +286,7 @@ SELECT [UNIQ]
 FROM [DataWarehouse].[bronze].[pos_avoltaclub_data]';
 EXEC sp_executesql @sql;
 
+/*=====10. Credit Card's info=====*/
 SET @sql = N'
 INSERT INTO [silver].[ac_dopdata_creditcard]
 (
@@ -306,6 +310,7 @@ SELECT [UNIQ]
 FROM [DataWarehouse].[bronze].[pos_creditcard_data]';
 EXEC sp_executesql @sql;
 
+/*=====11. Passenger's data=====*/
 SET @sql = N'
 INSERT INTO [silver].[ac_dopdata_pax]
 (
@@ -333,6 +338,7 @@ SELECT [UNIQ]
 FROM [DataWarehouse].[bronze].[pos_pax_data]';
 EXEC sp_executesql @sql;
 
+/*=====12. Promo number=====*/
 SET @sql = N'
 INSERT INTO [silver].[ac_dopdata_promonumber]
 (
@@ -358,6 +364,7 @@ SELECT [UNIQ]
 FROM [DataWarehouse].[bronze].[pos_promonumber_data]';
 EXEC sp_executesql @sql;
 
+/*=====13. SIP data=====*/
 SET @sql = N'
 INSERT INTO [silver].[ac_dopdata_salersip]
 (
@@ -379,6 +386,7 @@ SELECT [UNIQ]
 FROM [DataWarehouse].[bronze].[pos_salersip_data]';
 EXEC sp_executesql @sql;
 
+/*=====14. UIN data=====*/
 SET @sql = N'
 INSERT INTO [silver].[ac_dopdata_uin]
 (
@@ -400,6 +408,7 @@ SELECT [UNIQ]
 FROM [DataWarehouse].[bronze].[pos_uin_data]';
 EXEC sp_executesql @sql;
 
+/*=====15. Reference data for promo=====*/
 SET @sql = N'
 INSERT INTO [silver].[ref_promoid]
 (
@@ -412,4 +421,26 @@ SELECT [PROMOID]
 FROM [DataWarehouse].[bronze].[ref_promoid]';
 EXEC sp_executesql @sql;
 
+/*=====16. KYFO payment data=====*/
+SET @sql = N'
+INSERT INTO [silver].[ac_dopdata_kyfo]
+(
+    [UNIQ],[DATE],[CHECKNUM],[CASHCODE],[SHIFT],[ID],[ORDER],[SERVER]
+)
+
+SELECT [UNIQ]
+     ,CAST([DATE] AS DATE) AS [DATE]
+     ,[CHECKNUM]
+     ,[CASHCODE]
+     ,[SHIFT]
+     ,[ID]
+     ,[ORDER]
+     ,CASE WHEN [CASHCODE] like ''1%'' THEN ''DC1-SRV-KC02''
+           WHEN [CASHCODE] like ''28%'' THEN ''DC1-SRV-KC03''
+           ELSE ''DC1-SRV-KC01''
+    END AS [SERVER]
+FROM [DataWarehouse].[bronze].[pos_ac_kyfo]';
+EXEC sp_executesql @sql;
+
 END
+GO
